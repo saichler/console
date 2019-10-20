@@ -90,7 +90,7 @@ func (c *Console) handleInput(inputLine string, cid *ConsoleId, conn net.Conn) (
 	if !ok {
 		return "Error: Unknown command " + cmd + " in " + cid.String(), nil
 	}
-	return command.HandleCommand(command, args, conn)
+	return command.HandleCommand(command, args, conn, cid)
 }
 
 func Read(conn net.Conn) (string, error) {

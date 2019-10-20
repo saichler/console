@@ -14,6 +14,14 @@ func NewConsoleID(key string, parent *ConsoleId) *ConsoleId {
 	return cid
 }
 
+func (cid *ConsoleId) Key() string {
+	return cid.key
+}
+
+func (cid *ConsoleId) Parent() *ConsoleId {
+	return cid.parent
+}
+
 func (cid *ConsoleId) String() string {
 	buff := &bytes.Buffer{}
 	cid.string(buff)

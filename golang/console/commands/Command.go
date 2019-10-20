@@ -7,5 +7,5 @@ type Command interface {
 	Description() string
 	Usage() string
 	ConsoleId() *ConsoleId
-	HandleCommand(Command, []string, net.Conn) (string, *ConsoleId)
+	HandleCommand(Command, []string, net.Conn,*ConsoleId) (string, *ConsoleId)
 }
