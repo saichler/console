@@ -88,7 +88,7 @@ func (c *Console) handleInput(inputLine string, cid *ConsoleId, conn net.Conn) (
 	args = args[1:]
 	command, ok := commands[cmd]
 	if !ok {
-		return "Error: Unknown command " + cmd + " in " + cid.String(), nil
+		return "Error: Unknown command '" + cmd + "' in " + cid.String(), nil
 	}
 	return command.HandleCommand(command, args, conn, cid)
 }

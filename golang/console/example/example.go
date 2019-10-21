@@ -36,7 +36,7 @@ func (c *CommandExample) Usage() string {
 func (c *CommandExample) ConsoleId() *commands.ConsoleId {
 	return cid
 }
-func (h *CommandExample) HandleCommand(command commands.Command, args []string, conn net.Conn) (string, *commands.ConsoleId) {
+func (h *CommandExample) HandleCommand(command commands.Command, args []string, conn net.Conn,id *commands.ConsoleId) (string, *commands.ConsoleId) {
 	return "hello to you to", nil
 }
 
@@ -55,7 +55,7 @@ func (c *QuestionCommandExample) Usage() string {
 func (c *QuestionCommandExample) ConsoleId() *commands.ConsoleId {
 	return cid
 }
-func (h *QuestionCommandExample) HandleCommand(command commands.Command, args []string, conn net.Conn) (string, *commands.ConsoleId) {
+func (h *QuestionCommandExample) HandleCommand(command commands.Command, args []string, conn net.Conn,id *commands.ConsoleId) (string, *commands.ConsoleId) {
 	console.Write("How are you?", conn)
 	reply, _ := console.Read(conn)
 	return "I am glad you are " + reply, nil

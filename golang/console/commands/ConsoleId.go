@@ -25,6 +25,7 @@ func (cid *ConsoleId) Parent() *ConsoleId {
 func (cid *ConsoleId) String() string {
 	buff := &bytes.Buffer{}
 	cid.string(buff)
+	buff.WriteString(">")
 	return buff.String()
 }
 
@@ -32,7 +33,8 @@ func (cid *ConsoleId) string(buff *bytes.Buffer) {
 	if cid.parent != nil {
 		cid.parent.string(buff)
 	}
-	buff.WriteString("[")
+	if cid.parent != nil {
+		buff.WriteString("/")
+	}
 	buff.WriteString(cid.key)
-	buff.WriteString("]")
 }
