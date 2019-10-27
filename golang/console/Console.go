@@ -100,7 +100,7 @@ func Read(conn net.Conn) (string, error) {
 		e = Error("Failed to read line:", e)
 		return "", e
 	}
-	inputLine := strings.ToLower(strings.TrimSpace(string(line[0:n])))
+	inputLine := strings.TrimSpace(string(line[0:n]))
 	return inputLine, nil
 }
 
