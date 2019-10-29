@@ -83,7 +83,7 @@ func (c *Console) handleInput(inputLine string, cid *ConsoleId, conn net.Conn) (
 	if commands == nil {
 		return "Error: " + cid.String() + " has no registered commands.", nil
 	}
-	args := strings.Split(inputLine, " ")
+	args := getArgs(inputLine)
 	cmd := args[0]
 	args = args[1:]
 	command, ok := commands[cmd]
@@ -151,4 +151,31 @@ func suffixSpace(str, char string, size int) string {
 		buff.WriteString(char)
 	}
 	return buff.String()
+}
+
+func getArgs(line string) []string {
+	result := make([]string, 0)
+	q := false
+	index := 0
+	for i, c := range line {
+		char := string(c)
+		if char == "'" && !q {
+			q = true
+		} else if char == "'" && q {
+			q = false
+		} else if char == " " && !q {
+			arg := strings.TrimSpace(line[index:i])
+			if arg != "" {
+				result = append(result, arg)
+			}
+			index = i + 1
+		}
+	}
+	if index < len(line) {
+		arg := strings.TrimSpace(line[index:len(line)])
+		if arg != "" {
+			result = append(result, arg)
+		}
+	}
+	return result
 }
