@@ -27,13 +27,17 @@ func NewConsole(host string, port int, root *ConsoleId) (*Console, error) {
 	return console, nil
 }
 
-func (c *Console) RegisterCommand(command Command) {
+func (c *Console) RegisterCommand(command Command, alias string) {
 	cmds := c.commands[command.ConsoleId().String()]
 	if cmds == nil {
 		cmds = make(map[string]Command)
 		c.commands[command.ConsoleId().String()] = cmds
 	}
-	cmds[command.Command()] = command
+	if alias == "" {
+		cmds[command.Command()] = command
+	} else {
+		cmds[alias] = command
+	}
 }
 
 func (c *Console) Start(waitForExist bool) {
@@ -114,34 +118,41 @@ func Writeln(msg string, conn net.Conn) {
 }
 
 func (c *Console) printHelp(conn net.Conn, cid *ConsoleId) {
-	cmd := make(map[string]string)
-	cmd["?/help"] = "Print this help message."
-
 	commands := c.commands[cid.String()]
-	if commands != nil {
-		for _, v := range commands {
-			cmd[v.Command()] = v.Description()
-		}
+	maxCmd := calculateMaxCommandSize(commands)
+	if maxCmd<6 {
+		maxCmd = 6
 	}
+	maxDesc := calculateMaxCommandDescSize(commands)
+	maxLine := maxCmd + maxDesc + 3
 
-	maxCmdLen := 0
-	maxLineLen := 0
-	for command, desc := range cmd {
-		cl := len(command)
-		l := len(desc) + cl + 3
-		if cl > maxCmdLen {
-			maxCmdLen = cl
-		}
-		if l > maxLineLen {
-			maxLineLen = l
-		}
-	}
 	Writeln("Usage:", conn)
-	Writeln(suffixSpace("", "-", maxLineLen), conn)
-	for command, desc := range cmd {
-		pc := suffixSpace(command, " ", maxCmdLen)
-		Writeln(pc+" - "+desc, conn)
+	Writeln(suffixSpace("", "-", maxLine), conn)
+	Writeln(suffixSpace("?/help", " ", maxCmd)+" - Print this help message.", conn)
+	for c, cmd := range commands {
+		pc := suffixSpace(c, " ", maxCmd)
+		Writeln(pc+" - "+cmd.Description(), conn)
 	}
+}
+
+func calculateMaxCommandSize(commands map[string]Command) int {
+	max := 0
+	for k, _ := range commands {
+		if len(k) > max {
+			max = len(k)
+		}
+	}
+	return max
+}
+
+func calculateMaxCommandDescSize(commands map[string]Command) int {
+	max := 0
+	for _, v := range commands {
+		if len(v.Description()) > max {
+			max = len(v.Description())
+		}
+	}
+	return max
 }
 
 func suffixSpace(str, char string, size int) string {
