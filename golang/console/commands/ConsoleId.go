@@ -5,6 +5,7 @@ import "bytes"
 type ConsoleId struct {
 	key    string
 	parent *ConsoleId
+	suffix string
 }
 
 func NewConsoleID(key string, parent *ConsoleId) *ConsoleId {
@@ -22,16 +23,41 @@ func (cid *ConsoleId) Parent() *ConsoleId {
 	return cid.parent
 }
 
-func (cid *ConsoleId) String() string {
+func (cid *ConsoleId) Suffix() string {
+	return cid.suffix
+}
+
+func (cid *ConsoleId) SetSuffix(suffix string) {
+	cid.suffix = suffix
+}
+
+func (cid *ConsoleId) ID() string {
 	buff := &bytes.Buffer{}
-	cid.string(buff)
+	cid.id(buff)
+	return buff.String()
+}
+
+func (cid *ConsoleId) id(buff *bytes.Buffer) {
+	if cid.parent != nil {
+		cid.parent.id(buff)
+	}
+	if cid.parent != nil {
+		buff.WriteString("-")
+	}
+	buff.WriteString(cid.key)
+}
+
+func (cid *ConsoleId) Prompt() string {
+	buff := &bytes.Buffer{}
+	cid.prompt(buff)
+	buff.WriteString(cid.suffix)
 	buff.WriteString(">")
 	return buff.String()
 }
 
-func (cid *ConsoleId) string(buff *bytes.Buffer) {
+func (cid *ConsoleId) prompt(buff *bytes.Buffer) {
 	if cid.parent != nil {
-		cid.parent.string(buff)
+		cid.parent.prompt(buff)
 	}
 	if cid.parent != nil {
 		buff.WriteString("/")

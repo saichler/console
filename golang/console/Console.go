@@ -28,10 +28,10 @@ func NewConsole(host string, port int, root *ConsoleId) (*Console, error) {
 }
 
 func (c *Console) RegisterCommand(command Command, alias string) {
-	cmds := c.commands[command.ConsoleId().String()]
+	cmds := c.commands[command.ConsoleId().ID()]
 	if cmds == nil {
 		cmds = make(map[string]Command)
-		c.commands[command.ConsoleId().String()] = cmds
+		c.commands[command.ConsoleId().ID()] = cmds
 	}
 	if alias == "" {
 		cmds[command.Command()] = command
@@ -57,7 +57,7 @@ func (c *Console) waitForConnection() {
 		}
 		currentCID := c.rootCID
 		for {
-			Write(currentCID.String(), conn)
+			Write(currentCID.Prompt(), conn)
 			inputLine, e := Read(conn)
 			if e != nil {
 				break
@@ -83,16 +83,16 @@ func (c *Console) waitForConnection() {
 }
 
 func (c *Console) handleInput(inputLine string, cid *ConsoleId, conn net.Conn) (string, *ConsoleId) {
-	commands := c.commands[cid.String()]
+	commands := c.commands[cid.ID()]
 	if commands == nil {
-		return "Error: " + cid.String() + " has no registered commands.", nil
+		return "Error: " + cid.ID() + " has no registered commands.", nil
 	}
 	args := getArgs(inputLine)
 	cmd := args[0]
 	args = args[1:]
 	command, ok := commands[cmd]
 	if !ok {
-		return "Error: Unknown command '" + cmd + "' in " + cid.String(), nil
+		return "Error: Unknown command '" + cmd + "' in " + cid.ID(), nil
 	}
 	return command.HandleCommand(command, args, conn, cid)
 }
@@ -118,9 +118,9 @@ func Writeln(msg string, conn net.Conn) {
 }
 
 func (c *Console) printHelp(conn net.Conn, cid *ConsoleId) {
-	commands := c.commands[cid.String()]
+	commands := c.commands[cid.ID()]
 	maxCmd := calculateMaxCommandSize(commands)
-	if maxCmd<6 {
+	if maxCmd < 6 {
 		maxCmd = 6
 	}
 	maxDesc := calculateMaxCommandDescSize(commands)
