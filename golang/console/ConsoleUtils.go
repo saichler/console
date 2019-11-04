@@ -58,10 +58,10 @@ func ParseArgs(line string) []string {
 	index := 0
 	for i, c := range line {
 		if IsQuote(c) && !q {
-			panic("")
+			q = true
 		} else if IsQuote(c) && q {
-			panic("")
-		} else if !IsQuote(c) && string(c)==" " && !q {
+			q = false
+		} else if !IsQuote(c) && string(c) == " " && !q {
 			arg := strings.TrimSpace(line[index:i])
 			if arg != "" {
 				result = append(result, arg)
