@@ -3,45 +3,8 @@ package console
 import (
 	"bytes"
 	. "github.com/saichler/console/golang/console/commands"
-	. "github.com/saichler/utils/golang"
-	"net"
 	"strings"
 )
-
-func Read(conn net.Conn) (string, error) {
-	line := make([]byte, 4096)
-	n, e := conn.Read(line)
-	if e != nil {
-		e = Error("Failed to read line:", e)
-		return "", e
-	}
-	inputLine := strings.TrimSpace(string(line[0:n]))
-	return inputLine, nil
-}
-
-func Write(msg string, conn net.Conn) error {
-	if conn != nil {
-		_, e := conn.Write([]byte(msg))
-		if e != nil {
-			return e
-		}
-	}
-	return nil
-}
-
-func Writeln(msg string, conn net.Conn) error {
-	if conn != nil {
-		_, e := conn.Write([]byte(msg))
-		if e != nil {
-			return e
-		}
-		_, e = conn.Write([]byte("\n"))
-		if e != nil {
-			return e
-		}
-	}
-	return nil
-}
 
 func SuffixStringWithChar(str, char string, size int) string {
 	buff := bytes.Buffer{}

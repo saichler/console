@@ -57,31 +57,33 @@ func (c *Console) waitForConnection() {
 			break
 		}
 		currentCID := c.rootCID
+		SetConsoleConnection(conn)
 		for {
-			Write(currentCID.Prompt(), conn)
-			inputLine, e := Read(conn)
+			Print(currentCID.Prompt())
+			inputLine, e := Read()
 			if e != nil {
 				break
 			}
 
 			if inputLine == "ps" {
-				c.listAsyncCommands(conn)
+				c.listAsyncCommands()
 			} else if inputLine == "exit" || inputLine == "quit" {
-				Writeln("Goodbye!", conn)
+				Println("Goodbye!")
 				break
 			} else if inputLine == "?" || inputLine == "help" {
-				c.printHelp(conn, currentCID)
+				c.printHelp(currentCID)
 			} else if inputLine != "" {
-				resp, cid := c.handleInput(inputLine, currentCID, conn)
+				resp, cid := c.handleInput(inputLine, currentCID)
 				if cid != nil {
 					currentCID = cid
 				}
 				if resp != "" {
-					Writeln(resp, conn)
+					Println(resp)
 				}
 			}
 		}
 		conn.Close()
+		SetConsoleConnection(nil)
 	}
 	c.socket.Close()
 }
